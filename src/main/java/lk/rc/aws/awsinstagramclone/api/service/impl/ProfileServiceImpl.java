@@ -56,8 +56,11 @@ public class ProfileServiceImpl implements ProfileService {
         user.setUserId(userId);
 
         ProfileDetails profileDetails = profileDetailRepository.getProfileDetailsByUser(user);
-
         ProfilePicture picture = profilePictureRepository.getProfilePictureByProfileIdAndStatus(profileDetails, "ACT");
+
+        int postCount = postRepository.countPostByProfileId(profileDetails);
+        int followerCount = followRepository.countProfileWhichFollowMe(profileDetails.getProfileId());
+        int followingCount = followRepository.countProfileWhichFollowedByMe(profileDetails.getProfileId());
 
         if (profileDetails != null) {
 
@@ -70,6 +73,10 @@ public class ProfileServiceImpl implements ProfileService {
             dto.setStatus(profileDetails.getStatus());
             dto.setMobileNo(profileDetails.getUser().getMobileNo());
             dto.setEmail(profileDetails.getUser().getEmailAddress());
+
+            dto.setPostCount(postCount);
+            dto.setFollowerCount(followerCount);
+            dto.setFollowingCount(followingCount);
 
             if (picture != null) {
                 PostDTO postDTO = new PostDTO();

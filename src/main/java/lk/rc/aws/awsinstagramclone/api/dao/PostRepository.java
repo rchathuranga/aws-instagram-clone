@@ -14,5 +14,5 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 
     public List<Post> getAllPostsByProfileIdInOrderByCreatedTimeDesc(List<ProfileDetails> followingList);
 
-
+    public int countPostByProfileId(ProfileDetails followingList);
 }

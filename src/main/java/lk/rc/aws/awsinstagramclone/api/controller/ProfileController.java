@@ -46,7 +46,6 @@ public class ProfileController {
             responseBean = profileService.getProfileDetails(userId);
 
         } catch (Exception e) {
-            e.printStackTrace();
             responseBean.setResponseCode(ResponseCode.FAILED);
             responseBean.setResponseMsg("Server Error : "+ e.getMessage());
         }

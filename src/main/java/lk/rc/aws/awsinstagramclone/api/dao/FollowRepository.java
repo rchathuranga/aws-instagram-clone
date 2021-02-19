@@ -17,11 +17,17 @@ public interface FollowRepository extends JpaRepository<Follow, Integer> {
     @Query("SELECT f.followingProfileId from Follow f where f.profileId.profileId= ?1")
     public List<ProfileDetails> getProfileWhichFollowedByMe(int profileId);
 
+    @Query("SELECT count(f.followingProfileId) from Follow f where f.profileId.profileId= ?1")
+    public int countProfileWhichFollowedByMe(int profileId);
+
     //Followers
     public List<Follow> getAllFollowsByFollowingProfileId(ProfileDetails profileId);
 
     //Followers
     @Query("SELECT f.profileId from Follow f where f.followingProfileId.profileId= ?1")
     public List<ProfileDetails> getProfileWhichFollowMe(int profileId);
+
+    @Query("SELECT count(f.profileId) from Follow f where f.followingProfileId.profileId= ?1")
+    public int countProfileWhichFollowMe(int profileId);
 
 }

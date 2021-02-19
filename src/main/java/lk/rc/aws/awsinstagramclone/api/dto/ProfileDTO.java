@@ -19,4 +19,7 @@ public class ProfileDTO {
     private String mobileNo;
     private String email;
     private PostDTO profilePicture;
+    private int postCount;
+    private int followerCount;
+    private int followingCount;
 }
