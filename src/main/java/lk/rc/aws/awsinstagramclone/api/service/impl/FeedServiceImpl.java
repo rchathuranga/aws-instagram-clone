@@ -10,6 +10,7 @@ import lk.rc.aws.awsinstagramclone.api.service.FeedService;
 import lk.rc.aws.awsinstagramclone.model.Follow;
 import lk.rc.aws.awsinstagramclone.model.Post;
 import lk.rc.aws.awsinstagramclone.model.ProfileDetails;
+import lk.rc.aws.awsinstagramclone.util.JwtTokenUtil;
 import lk.rc.aws.awsinstagramclone.util.ResponseCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,9 @@ public class FeedServiceImpl implements FeedService {
     @Autowired
     private FollowRepository followRepository;
 
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
+
     @Override
     public FeedResponseBean getTimeline(ProfileDetails userProfile) throws Exception {
         FeedResponseBean responseBean = new FeedResponseBean();
@@ -37,6 +41,7 @@ public class FeedServiceImpl implements FeedService {
         postDTOList = convertPostToDTOs(postList);
 
         responseBean.setPostList(postDTOList);
+        responseBean.setToken(jwtTokenUtil.generateToken(userProfile.getUser()));
         responseBean.setResponseCode(ResponseCode.SUCCESS);
         responseBean.setResponseMsg("");
         return responseBean;
@@ -55,6 +60,7 @@ public class FeedServiceImpl implements FeedService {
         postDTOList = convertPostToDTOs(feedPosts);
 
         responseBean.setPostList(postDTOList);
+        responseBean.setToken(jwtTokenUtil.generateToken(userProfile.getUser()));
         responseBean.setResponseCode(ResponseCode.SUCCESS);
         responseBean.setResponseMsg("");
 
@@ -67,10 +73,17 @@ public class FeedServiceImpl implements FeedService {
         for (Post post : postList) {
             PostDTO postDTO = new PostDTO();
 
+            ProfileDetails prof = post.getProfileId();
+
             postDTO.setPostId(post.getPostId());
             postDTO.setCaption(post.getCaption());
             postDTO.setImageUrl(post.getImageUrl());
             postDTO.setLikeCount(post.getPostLikes().size());
+
+            ProfileDTO dto1 = new ProfileDTO();
+            dto1.setProfileId(prof.getProfileId());
+            dto1.setFullName(prof.getFullName());
+            postDTO.setProfileDTO(dto1);
 
             postDTO.setLikedByProfiles(post.getPostLikes().stream().map(postLike -> {
                 ProfileDTO dto = new ProfileDTO();
@@ -91,6 +104,7 @@ public class FeedServiceImpl implements FeedService {
                 return dto;
             }).collect(Collectors.toList()));
 
+            postDTO.setCreatedTime(post.getCreatedTime().toString());
             postDTOList.add(postDTO);
         }
         return postDTOList;

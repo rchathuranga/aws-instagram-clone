@@ -6,4 +6,5 @@ import lombok.Data;
 abstract class AbstractResponseBean {
     private int responseCode;
     private String responseMsg;
+    private String token;
 }

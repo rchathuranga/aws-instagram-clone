@@ -15,13 +15,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class AuthenticationController {
 
     @Autowired
@@ -42,15 +40,13 @@ public class AuthenticationController {
             responseBean.setUserId(user.getUserId());
             String token = jwtTokenUtil.generateToken(user);
 
-            HttpHeaders responseHeaders = new HttpHeaders();
-            responseHeaders.set("token",token);
-
+            responseBean.setToken(token);
             responseBean.setResponseCode(ResponseCode.SUCCESS);
             responseBean.setResponseMsg("");
-            return ResponseEntity.ok().headers(responseHeaders).body(responseBean);
+            return ResponseEntity.ok().body(responseBean);
         } catch (Exception e) {
             responseBean.setResponseCode(ResponseCode.FAILED);
-            responseBean.setResponseMsg("Invalid Credentials : "+ e.getMessage());
+            responseBean.setResponseMsg("Invalid Credentials");
             return ResponseEntity.ok(responseBean);
         }
     }
@@ -58,13 +54,22 @@ public class AuthenticationController {
     @PostMapping(value = "/sign-up", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AuthenticationResponseBean> signUp(@RequestBody AuthenticationRequestBean authenticationRequestBean) {
         AuthenticationResponseBean responseBean = new AuthenticationResponseBean();
+
+
+        HttpHeaders responseHeaders = new HttpHeaders();
         try {
             responseBean = authenticationService.createUser(authenticationRequestBean);
+            User user = authenticationService.getUserDetailsByUsername(authenticationRequestBean.getUsername());
+            responseBean.setUserId(user.getUserId());
+            String token = jwtTokenUtil.generateToken(user);
+
+            responseHeaders.set("token",token);
         } catch (Exception e) {
             responseBean.setResponseCode(ResponseCode.FAILED);
-            responseBean.setResponseMsg("Server Error : "+ e.getMessage());
+            responseBean.setResponseMsg("Server Error");
         }
-        return new ResponseEntity<>(responseBean, HttpStatus.OK);
+
+        return ResponseEntity.ok().headers(responseHeaders).body(responseBean);
     }
 
     private void authenticate(String username, String password) throws Exception {

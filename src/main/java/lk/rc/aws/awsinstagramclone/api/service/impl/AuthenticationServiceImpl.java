@@ -33,6 +33,8 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
 
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
@@ -88,6 +90,8 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
 
         }
 
+        String token = jwtTokenUtil.generateToken(user);
+        responseBean.setToken(token);
         responseBean.setResponseCode(ResponseCode.FAILED);
         responseBean.setResponseMsg("Failed to Save User Profile");
         return responseBean;

@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/v1/profile")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class ProfileController {
 
     @Autowired
@@ -27,10 +28,10 @@ public class ProfileController {
         ProfileResponseBean responseBean = new ProfileResponseBean();
 
         try{
-            throw new Exception("");
+            responseBean = profileService.updateProfileDetails(profileRequestBean);
         }catch (Exception e){
             responseBean.setResponseCode(ResponseCode.FAILED);
-            responseBean.setResponseMsg("Server Error : "+ e.getMessage());
+            responseBean.setResponseMsg("Server Error");
         }
 
         return new ResponseEntity<>(responseBean,HttpStatus.OK);
@@ -45,6 +46,7 @@ public class ProfileController {
             responseBean = profileService.getProfileDetails(userId);
 
         } catch (Exception e) {
+            e.printStackTrace();
             responseBean.setResponseCode(ResponseCode.FAILED);
             responseBean.setResponseMsg("Server Error : "+ e.getMessage());
         }
@@ -52,7 +54,7 @@ public class ProfileController {
     }
 
     @PostMapping("/update-picture")
-    public ResponseEntity<ProfileResponseBean> updateProfilePicture(@ModelAttribute ProfileRequestBean profileRequestBean){
+    public ResponseEntity<ProfileResponseBean> updateProfilePicture(@RequestBody ProfileRequestBean profileRequestBean){
         ProfileResponseBean responseBean = new ProfileResponseBean();
         try {
 
@@ -62,10 +64,25 @@ public class ProfileController {
         } catch (Exception e) {
             e.printStackTrace();
             responseBean.setResponseCode(ResponseCode.FAILED);
-            responseBean.setResponseMsg("Server Error : "+ e.getMessage());
+            responseBean.setResponseMsg("Server Error");
         }
 
         return new ResponseEntity<>(responseBean,HttpStatus.OK);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<ProfileResponseBean> searchProfiles(@RequestParam(value = "keyword", required = false) String keyword){
+        ProfileResponseBean responseBean = new ProfileResponseBean();
+        try {
+
+            ProfileDetails userProfile = (ProfileDetails) httpServletRequest.getAttribute("userProfile");
+            responseBean = profileService.searchProfile(userProfile, keyword);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            responseBean.setResponseCode(ResponseCode.FAILED);
+            responseBean.setResponseMsg("Server Error");
+        }
+        return new ResponseEntity<>(responseBean,HttpStatus.OK);
+    }
 }

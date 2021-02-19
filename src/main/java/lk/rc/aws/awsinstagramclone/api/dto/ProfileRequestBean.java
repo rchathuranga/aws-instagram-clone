@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Data
 public class ProfileRequestBean {
     private String caption;
-    private MultipartFile profilePictureUrl;
+    private String profileImage;
+    private String profileImageName;
     private int postId;
 }

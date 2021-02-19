@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/v1/follow")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class FollowController {
 
     @Autowired
@@ -31,7 +32,7 @@ public class FollowController {
 
         } catch (Exception e) {
             responseBean.setResponseCode(ResponseCode.FAILED);
-            responseBean.setResponseMsg("Server Error : "+ e.getMessage());
+            responseBean.setResponseMsg("Server Error");
         }
 
         return new ResponseEntity<>(responseBean, HttpStatus.OK);
@@ -47,7 +48,7 @@ public class FollowController {
 
         } catch (Exception e) {
             responseBean.setResponseCode(ResponseCode.FAILED);
-            responseBean.setResponseMsg("Server Error : "+ e.getMessage());
+            responseBean.setResponseMsg("Server Error");
         }
         return new ResponseEntity<>(responseBean, HttpStatus.OK);
     }
@@ -62,7 +63,7 @@ public class FollowController {
 
         } catch (Exception e) {
             responseBean.setResponseCode(ResponseCode.FAILED);
-            responseBean.setResponseMsg("Server Error : "+ e.getMessage());
+            responseBean.setResponseMsg("Server Error");
         }
         return new ResponseEntity<>(responseBean, HttpStatus.OK);
     }

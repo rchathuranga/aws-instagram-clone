@@ -12,4 +12,5 @@ public interface ProfileService {
 
     public ProfileResponseBean updateProfilePicture(ProfileDetails userProfile, ProfileRequestBean profileRequestBean) throws Exception;
 
+    public ProfileResponseBean searchProfile(ProfileDetails profileDetails, String keyword) throws Exception;
 }

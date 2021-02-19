@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/v1/post")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class PostController {
 
     @Autowired
@@ -32,7 +33,7 @@ public class PostController {
 
         } catch (Exception e) {
             responseBean.setResponseCode(ResponseCode.FAILED);
-            responseBean.setResponseMsg("Server Error : "+ e.getMessage());
+            responseBean.setResponseMsg("Server Error");
         }
 
         return new ResponseEntity<>(responseBean, HttpStatus.OK);
@@ -48,7 +49,7 @@ public class PostController {
 
         } catch (Exception e) {
             responseBean.setResponseCode(ResponseCode.FAILED);
-            responseBean.setResponseMsg("Server Error : "+ e.getMessage());
+            responseBean.setResponseMsg("Server Error");
         }
         return new ResponseEntity<>(responseBean, HttpStatus.OK);
     }
@@ -63,7 +64,7 @@ public class PostController {
 
         } catch (Exception e) {
             responseBean.setResponseCode(ResponseCode.FAILED);
-            responseBean.setResponseMsg("Server Error : "+ e.getMessage());
+            responseBean.setResponseMsg("Server Error");
         }
         return new ResponseEntity<>(responseBean, HttpStatus.OK);
     }

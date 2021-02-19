@@ -4,6 +4,7 @@ import lk.rc.aws.awsinstagramclone.api.dto.FeedRequestBean;
 import lk.rc.aws.awsinstagramclone.api.dto.FeedResponseBean;
 import lk.rc.aws.awsinstagramclone.api.service.FeedService;
 import lk.rc.aws.awsinstagramclone.model.ProfileDetails;
+import lk.rc.aws.awsinstagramclone.util.JwtTokenUtil;
 import lk.rc.aws.awsinstagramclone.util.ResponseCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/v1/feed")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class FeedController {
 
     @Autowired
@@ -22,6 +24,8 @@ public class FeedController {
     @Autowired
     private FeedService feedService;
 
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
 
     @GetMapping("/time-line")
     public ResponseEntity<FeedResponseBean> getMyTimeLine() {
@@ -33,7 +37,7 @@ public class FeedController {
 
         } catch (Exception e) {
             responseBean.setResponseCode(ResponseCode.FAILED);
-            responseBean.setResponseMsg("Server Error : "+ e.getMessage());
+            responseBean.setResponseMsg("Server Error");
         }
         return new ResponseEntity<>(responseBean, HttpStatus.OK);
     }
@@ -49,7 +53,7 @@ public class FeedController {
         } catch (Exception e) {
             e.printStackTrace();
             responseBean.setResponseCode(ResponseCode.FAILED);
-            responseBean.setResponseMsg("Server Error : "+ e.getMessage());
+            responseBean.setResponseMsg("Server Error");
         }
         return new ResponseEntity<>(responseBean, HttpStatus.OK);
     }

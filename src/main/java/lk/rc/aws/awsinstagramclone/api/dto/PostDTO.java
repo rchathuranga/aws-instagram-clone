@@ -6,12 +6,14 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+//@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PostDTO {
     public int postId;
+    public ProfileDTO profileDTO;
     public String caption;
     public String imageUrl;
     public int likeCount;
     public List<ProfileDTO> likedByProfiles;
     public List<CommentDTO> comments;
+    public String createdTime;
 }

@@ -14,7 +14,12 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.Objects;
 
 @Component
@@ -28,11 +33,11 @@ public class S3FileUploader {
     // @Async annotation ensures that the method is executed in a different background thread
     // but not consume the main thread.
     @Async
-    public String uploadFile(final MultipartFile multipartFile) {
+    public String uploadFile(final String base64Image, final String fileName) {
         System.out.println("File upload in progress.");
         String url = null;
         try {
-            final File file = convertMultiPartFileToFile(multipartFile);
+            final File file = convertBase64toFile(base64Image,fileName);
             url = uploadFileToS3Bucket(bucketName, file);
             System.out.println("File upload is completed.");
             file.delete();  // To remove the file locally created in the project folder.
@@ -62,6 +67,27 @@ public class S3FileUploader {
 
         String resourceUrl = ((AmazonS3Client) amazonS3).getResourceUrl(bucketName, uniqueFileName);
         return resourceUrl;
+    }
+
+    public File convertBase64toFile(String apiImage, String fileName) {
+        String fileType = getFileType(apiImage);
+        String substring = apiImage.substring(23);
+        byte[] decodedImg = Base64.getDecoder().decode(substring.getBytes(StandardCharsets.UTF_8));
+        String imageName = fileName+"."+fileType;
+        Path destinationFile = Paths.get("", imageName);
+        try {
+            Files.write(destinationFile, decodedImg);
+        } catch (IOException e) {
+            System.out.println("Error converting the base64 to file= "+ e.getMessage());
+        }
+        return new File(imageName);
+    }
+
+    public String getFileType(String encodedImage){
+        int indexOfColen = encodedImage.indexOf(":");
+        int indexOfSemiColen = encodedImage.indexOf(";");
+        String fileType = encodedImage.substring(indexOfColen+1, indexOfSemiColen);
+        return fileType.replace("image/", "");
     }
 
 }

@@ -57,6 +57,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // dont authenticate this particular request
                 .authorizeRequests().antMatchers("/api/v1/auth/sign-in").permitAll()
                 .antMatchers("/api/v1/auth/sign-up").permitAll()
+                .antMatchers("/index.html").permitAll()
+                .antMatchers("/image").permitAll()
 
                 // for swagger-ui documentation
                 .antMatchers("/v2/api-docs").permitAll()

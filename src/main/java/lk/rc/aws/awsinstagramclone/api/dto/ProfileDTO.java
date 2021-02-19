@@ -16,5 +16,7 @@ public class ProfileDTO {
     private String lastName;
     private Date dateOfBirth;
     private String status;
+    private String mobileNo;
+    private String email;
     private PostDTO profilePicture;
 }

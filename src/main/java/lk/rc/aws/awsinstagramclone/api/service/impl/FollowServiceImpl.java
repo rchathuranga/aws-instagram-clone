@@ -2,12 +2,17 @@ package lk.rc.aws.awsinstagramclone.api.service.impl;
 
 import lk.rc.aws.awsinstagramclone.api.dao.FollowRepository;
 import lk.rc.aws.awsinstagramclone.api.dao.ProfileDetailRepository;
+import lk.rc.aws.awsinstagramclone.api.dao.ProfilePictureRepository;
 import lk.rc.aws.awsinstagramclone.api.dto.FollowResponseBean;
+import lk.rc.aws.awsinstagramclone.api.dto.PostDTO;
 import lk.rc.aws.awsinstagramclone.api.dto.ProfileDTO;
 import lk.rc.aws.awsinstagramclone.api.service.FollowService;
 import lk.rc.aws.awsinstagramclone.model.Follow;
 import lk.rc.aws.awsinstagramclone.model.ProfileDetails;
+import lk.rc.aws.awsinstagramclone.model.ProfilePicture;
+import lk.rc.aws.awsinstagramclone.util.JwtTokenUtil;
 import lk.rc.aws.awsinstagramclone.util.ResponseCode;
+import lk.rc.aws.awsinstagramclone.util.SysConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +28,13 @@ public class FollowServiceImpl implements FollowService {
     private FollowRepository followRepository;
 
     @Autowired
+    private JwtTokenUtil jwtTokenUtil;
+
+    @Autowired
     private ProfileDetailRepository profileDetailRepository;
+
+    @Autowired
+    private ProfilePictureRepository profilePictureRepository;
 
     @Override
     @Transactional
@@ -39,6 +50,8 @@ public class FollowServiceImpl implements FollowService {
             follow.setStatus("ACT");
 
             follow = followRepository.save(follow);
+
+            responseBean.setToken(jwtTokenUtil.generateToken(profile.getUser()));
             responseBean.setResponseCode(ResponseCode.SUCCESS);
             responseBean.setResponseMsg("");
         }else {
@@ -69,9 +82,19 @@ public class FollowServiceImpl implements FollowService {
             details.setLastName(profileId.getLastName());
             details.setAge(profileId.getAge());
 
+            ProfilePicture picture = profilePictureRepository.getProfilePictureByProfileIdAndStatus(profileId, SysConstant.STATUS_ACTIVE);
+            if (picture != null) {
+                PostDTO postDTO = new PostDTO();
+                postDTO.setCaption(picture.getPost().getCaption());
+                postDTO.setImageUrl(picture.getPost().getImageUrl());
+                postDTO.setLikeCount(picture.getPost().getPostLikes().size());
+                details.setProfilePicture(postDTO);
+            }
+
             followerList.add(details);
         }
 
+        responseBean.setToken(jwtTokenUtil.generateToken(profile.getUser()));
         responseBean.setFollowersList(followerList);
         responseBean.setResponseCode(ResponseCode.SUCCESS);
         responseBean.setResponseMsg("");
@@ -103,6 +126,7 @@ public class FollowServiceImpl implements FollowService {
             followingList.add(details);
         }
 
+        responseBean.setToken(jwtTokenUtil.generateToken(profile.getUser()));
         responseBean.setFollowingList(followingList);
         responseBean.setResponseCode(ResponseCode.SUCCESS);
         responseBean.setResponseMsg("");

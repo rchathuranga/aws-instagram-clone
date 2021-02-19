@@ -10,7 +10,9 @@ import lk.rc.aws.awsinstagramclone.model.Post;
 import lk.rc.aws.awsinstagramclone.model.PostComment;
 import lk.rc.aws.awsinstagramclone.model.PostLike;
 import lk.rc.aws.awsinstagramclone.model.ProfileDetails;
+import lk.rc.aws.awsinstagramclone.util.JwtTokenUtil;
 import lk.rc.aws.awsinstagramclone.util.ResponseCode;
+import lk.rc.aws.awsinstagramclone.util.S3FileUploader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +23,9 @@ import java.sql.Timestamp;
 public class PostServiceImpl implements PostService {
 
     @Autowired
+    private S3FileUploader s3FileUploader;
+
+    @Autowired
     private PostRepository postRepository;
 
     @Autowired
@@ -28,6 +33,9 @@ public class PostServiceImpl implements PostService {
 
     @Autowired
     private PostCommentRepository postCommentRepository;
+
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
 
     @Override
     @Transactional
@@ -37,10 +45,11 @@ public class PostServiceImpl implements PostService {
         Post post = new Post();
         post.setProfileId(profileDetails);
         post.setCaption(feedRequestBean.getCaption());
-        post.setImageUrl(feedRequestBean.getImageUrl());
+        post.setImageUrl(s3FileUploader.uploadFile(feedRequestBean.getPostImage(), feedRequestBean.getPostImageName()));
         post.setCreatedTime(new Timestamp(System.currentTimeMillis()));
         post.setLastUpdatedTime(new Timestamp(System.currentTimeMillis()));
-        post.setStatus("PBL");
+        post.setStatus("ACT");
+        post.setCreatedTime(new Timestamp(System.currentTimeMillis()));
 
         post = postRepository.save(post);
 
@@ -63,6 +72,7 @@ public class PostServiceImpl implements PostService {
 
         postLikeRepository.save(postLike);
 
+        responseBean.setToken(jwtTokenUtil.generateToken(userProfile.getUser()));
         responseBean.setResponseCode(ResponseCode.SUCCESS);
         responseBean.setResponseMsg("");
         return responseBean;
@@ -83,6 +93,7 @@ public class PostServiceImpl implements PostService {
 
         postCommentRepository.save(comment);
 
+        responseBean.setToken(jwtTokenUtil.generateToken(userProfile.getUser()));
         responseBean.setResponseCode(ResponseCode.SUCCESS);
         responseBean.setResponseMsg("");
         return responseBean;
