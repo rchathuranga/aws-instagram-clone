@@ -12,7 +12,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 
     public List<Post> getAllPostsByProfileIdOrderByCreatedTimeDesc(ProfileDetails profileId);
 
-    public List<Post> getAllPostsByProfileIdInOrderByCreatedTime(List<ProfileDetails> followingList);
+    public List<Post> getAllPostsByProfileIdInOrderByCreatedTimeDesc(List<ProfileDetails> followingList);
 
 
 }
